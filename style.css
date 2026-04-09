@@ -41,7 +41,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
     background: var(--bg);
 }
@@ -80,7 +81,7 @@ body {
 .notif-badge {
     position: relative;
     top: -12px;
-    right: -8px;
+    inset-inline-end: -8px;
     background: var(--danger);
     color: white;
     border-radius: 50%;
@@ -97,55 +98,84 @@ body {
     padding: 16px;
     scroll-behavior: smooth;
 }
-/* باقي الأنماط كما هي (لم تتغير) – تأكد من تضمينها جميعاً */
-.dashboard-search, .search-bar {
-    background: var(--card-bg);
+/* تحسين زر العودة */
+.back-btn {
+    font-size: 24px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.15);
+    border-radius: 30px;
+    padding: 6px 12px;
+}
+.back-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+/* أنماط البحث */
+.search-container {
+    position: relative;
+    width: 100%;
     margin: 12px 0;
-    padding: 10px 14px;
-    border-radius: 40px;
+}
+.search-wrapper {
     display: flex;
     gap: 10px;
-    border: 1px solid var(--border);
     position: relative;
 }
-.dashboard-search input, .search-bar input {
+.search-wrapper input {
     flex: 1;
     padding: 10px 14px;
-    border: none;
-    background: var(--bg);
-    border-radius: 30px;
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    background: var(--input-bg);
+    color: var(--text);
     font-size: 14px;
     outline: none;
-    color: var(--text);
+    direction: auto;
+    text-align: start;
 }
-.dashboard-search button, .search-bar button {
+.search-wrapper button {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0 16px;
-    border-radius: 30px;
+    padding: 0 20px;
+    border-radius: 40px;
     font-weight: bold;
     cursor: pointer;
 }
-.search-suggestions {
+.suggestions-list {
     position: absolute;
     top: 100%;
-    left: 14px;
-    right: 14px;
+    left: 0;
+    right: 0;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    max-height: 250px;
+    overflow-y: auto;
     z-index: 100;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     display: none;
 }
-.search-suggestions.show { display: block; }
+.suggestions-list.show {
+    display: block;
+}
 .suggestion-item {
-    padding: 8px 16px;
+    padding: 10px 16px;
     cursor: pointer;
     border-bottom: 1px solid var(--border);
+    color: var(--text);
+    transition: background 0.2s;
 }
-.suggestion-item:last-child { border-bottom: none; }
-.suggestion-item:hover { background: var(--bg); }
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+.suggestion-item:hover {
+    background: var(--bg);
+}
+body.dark .suggestion-item:hover {
+    background: rgba(255,255,255,0.1);
+}
+/* أنماط الفلاتر */
 .filters-bar {
     display: flex;
     flex-wrap: wrap;
@@ -165,6 +195,7 @@ body {
     border: none;
     cursor: pointer;
 }
+/* قائمة الأدوية */
 .content-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -182,6 +213,7 @@ body {
     border: 1px solid var(--border);
     transition: 0.2s;
     position: relative;
+    flex-direction: row;
 }
 .med-card.selected {
     background: var(--primary);
@@ -205,30 +237,16 @@ body {
     content: "✓";
     color: var(--primary);
 }
-.med-image-thumb {
-    width: 48px;
-    height: 48px;
-    background: var(--bg);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    overflow: hidden;
-}
-.med-image-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.med-text { flex: 1; }
-.med-name { font-weight: bold; font-size: 0.95rem; }
-.delete-button {
+.med-card .delete-button {
     background: none;
     border: none;
     cursor: pointer;
     opacity: 0.6;
     transition: 0.2s;
+    display: none;
+}
+.med-card.selection-mode .delete-button {
+    display: block;
 }
 .delete-button:hover { opacity: 1; }
 .trash-bin-icon {
@@ -293,6 +311,7 @@ body {
     transition: 0.2s;
 }
 .main-btn:hover { background: var(--primary-dark); transform: scale(1.02); }
+/* النوافذ المنبثقة */
 .modal {
     display: none;
     position: fixed;
@@ -319,12 +338,13 @@ body {
 .close-modal {
     position: absolute;
     top: 12px;
-    left: 12px;
+    inset-inline-start: 12px;
     font-size: 22px;
     cursor: pointer;
+    z-index: 10;
 }
 .med-form { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
-.form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .form-input {
     flex: 1;
     padding: 10px;
@@ -334,6 +354,12 @@ body {
     color: var(--text);
     font-size: 14px;
     outline: none;
+    direction: auto;
+    text-align: start;
+}
+select.form-input {
+    background-position: left 0.75rem center;
+    padding-inline: 1rem;
 }
 .small-btn {
     background: var(--primary);
@@ -380,9 +406,10 @@ body {
     cursor: pointer;
 }
 .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+/* صفحات الشركات والتصنيفات */
 .categories-grid, .companies-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 12px;
     margin: 16px 0;
 }
@@ -395,9 +422,60 @@ body {
     border: 1px solid var(--border);
     font-weight: bold;
     transition: 0.2s;
+    position: relative;
+}
+.category-card.selected, .company-card.selected {
+    background: var(--primary);
+    color: white;
+    border-color: white;
+}
+.category-card .checkbox, .company-card .checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text);
+    border-radius: 4px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+.category-card.selected .checkbox, .company-card.selected .checkbox {
+    display: flex;
+    background: white;
+}
+.category-card.selected .checkbox::after, .company-card.selected .checkbox::after {
+    content: "✓";
+    color: var(--primary);
 }
 .category-card:hover, .company-card:hover { background: var(--primary); color: white; }
 .company-origin, .medicine-count { font-size: 0.7rem; margin-top: 4px; opacity: 0.7; }
+.batch-actions-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+.batch-rename-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.batch-cancel-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+}
+/* الإشعارات */
 .notification-item {
     background: var(--card-bg);
     border-radius: 20px;
@@ -416,6 +494,7 @@ body {
     padding: 8px;
     border-radius: 40px;
     margin-bottom: 16px;
+    flex-direction: row;
 }
 .tab-btn {
     flex: 1;
@@ -446,7 +525,7 @@ body {
 }
 .settings-menu-item:hover { background: var(--primary); color: white; }
 .settings-menu-icon { font-size: 22px; width: 36px; text-align: center; }
-.settings-menu-text { flex: 1; font-weight: bold; }
+.settings-menu-text { flex: 1; font-weight: bold; text-align: start; }
 .settings-menu-arrow { font-size: 18px; }
 .settings-page-header {
     display: flex;
@@ -492,9 +571,41 @@ body {
     color: var(--danger);
     font-weight: bold;
 }
-.med-detail-item { margin: 8px 0; display: flex; gap: 8px; }
-.med-detail-label { font-weight: bold; min-width: 100px; }
-.med-image { max-width: 100%; border-radius: 12px; margin-top: 12px; }
+/* نافذة تفاصيل الدواء */
+.med-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+}
+.med-detail-item {
+    background: var(--bg);
+    padding: 8px 12px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.med-detail-label {
+    font-weight: bold;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+.med-detail-value {
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+.med-image {
+    grid-column: span 2;
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 8px;
+}
+@media (min-width: 768px) {
+    .content-list { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .main-buttons { grid-template-columns: repeat(5, 1fr); }
+    .modal-content { max-width: 600px; }
+}
 .chart-container { background: var(--card-bg); padding: 12px; border-radius: 16px; margin: 16px 0; }
 .loading-overlay {
     position: fixed;
@@ -519,7 +630,3 @@ body {
     animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@media (min-width: 768px) {
-    .content-list { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-    .main-buttons { grid-template-columns: repeat(5, 1fr); }
-}
